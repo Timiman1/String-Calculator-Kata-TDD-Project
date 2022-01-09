@@ -61,5 +61,18 @@ namespace TestProject
 
             Assert.Equal(15, result);
         }
+
+        [Theory]
+        [InlineData("//;\n1;2\n3,4;5")]
+        [InlineData("//%\n5%4,3\n2%1")]
+        [InlineData("//$\n5$4,3\n2$1")]
+        public void Should_Return_15_When_Adding_1_And_2_And_3_And_4_And_5_Separated_By_Commas_And_NewLines_And_Custom_Delimeter(string numbers)
+        {
+            StringCalculatorKata kata = new StringCalculatorKata();
+
+            int result = kata.Add(numbers);
+
+            Assert.Equal(15, result);
+        }
     }
 }
