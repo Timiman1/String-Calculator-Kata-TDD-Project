@@ -84,5 +84,15 @@ namespace TestProject
 
             Assert.Equal("negatives not allowed: -5 -78", exception.Message);
         }
+
+        [Fact]
+        public void Should_Return_103_When_Adding_1_And_2_And_100_And_1001_Because_Numbers_Greater_Than_1000_Gets_Ignored()
+        {
+            var kata = new StringCalculatorKata();
+
+            int result = kata.Add(@"//€\n1,2€100\n1001");
+
+            Assert.Equal(103, result);
+        }
     }
 }

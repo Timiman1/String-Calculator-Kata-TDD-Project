@@ -69,7 +69,7 @@ namespace StringCalculatorKataConsole
         {
             string[] separated = numbers.Split(dels, StringSplitOptions.RemoveEmptyEntries);
 
-            return separated.Select(n => int.Parse(n)).ToArray();
+            return IgnoreNumbersLargerThan1000(separated).Select(n => int.Parse(n)).ToArray();
         }
 
         private string[] GetAllDelimeters(string[] userDefinedDels)
@@ -106,6 +106,11 @@ namespace StringCalculatorKataConsole
                 return numbers.Where(n => n < 0).ToArray();
 
             return null;
+        }
+
+        private IEnumerable<string> IgnoreNumbersLargerThan1000(string[] numbers)
+        {
+            return numbers.Where(n => int.Parse(n) <= 1000);
         }
     }
 }
