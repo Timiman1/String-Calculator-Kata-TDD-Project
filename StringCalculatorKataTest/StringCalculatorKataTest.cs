@@ -37,5 +37,17 @@ namespace TestProject
 
             Assert.Equal(3, result);
         }
+
+        [Theory]
+        [InlineData("1,2,3,45")]
+        [InlineData("45,3,2,1")]
+        public void Should_Return_51_When_Adding_1_And_2_And_3_And_45_Separated_By_Commas(string numbers)
+        {
+            StringCalculatorKata kata = new StringCalculatorKata();
+
+            int result = kata.Add(numbers);
+
+            Assert.Equal(51, result);
+        }
     }
 }
