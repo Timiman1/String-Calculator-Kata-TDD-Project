@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace StringCalculatorKataConsole
 {
@@ -6,11 +7,10 @@ namespace StringCalculatorKataConsole
     {
         public int Add(string numbers)
         {
-            if (numbers == string.Empty)
-            {
+            if (numbers == "")
                 return 0;
-            }
-            return int.Parse(numbers);
+
+            return numbers.Split(',').Sum(n => int.Parse(n));
         }
     }
 }
