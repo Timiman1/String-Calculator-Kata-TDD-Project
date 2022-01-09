@@ -90,9 +90,22 @@ namespace TestProject
         {
             var kata = new StringCalculatorKata();
 
-            int result = kata.Add(@"//€\n1,2€100\n1001");
+            int result = kata.Add("//€\n1,2€100\n1001");
 
             Assert.Equal(103, result);
+        }
+
+        [Theory]
+        [InlineData("//[%%]\n1%%2%%3")]
+        [InlineData("//[¤¤¤]\n1¤¤¤2¤¤¤3")]
+        [InlineData("//[!#&$£]\n1!#&$£2!#&$£3")]
+        public void Should_Return_6_When_Adding_1_And_2_And_3_And_Using_Custom_Delimeters_Of_Any_Length(string numbers)
+        {
+            StringCalculatorKata kata = new StringCalculatorKata();
+
+            int result = kata.Add(numbers);
+
+            Assert.Equal(6, result);
         }
     }
 }
