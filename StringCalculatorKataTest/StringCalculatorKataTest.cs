@@ -74,5 +74,15 @@ namespace TestProject
 
             Assert.Equal(15, result);
         }
+
+        [Fact]
+        public void Should_Throw_Exception_With_Error_Message_When_Adding_Negatives()
+        {
+            var kata = new StringCalculatorKata();
+
+            var exception = Assert.Throws<ArgumentException>(() => kata.Add("-5,6,-78"));
+
+            Assert.Equal("negatives not allowed: -5 -78", exception.Message);
+        }
     }
 }

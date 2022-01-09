@@ -27,6 +27,8 @@ namespace StringCalculatorKataConsole
 
             int[] parsedNumbers = GetSeparatedParsedNumbers(numbers);
 
+            ValidateNonNegatives(parsedNumbers);
+
             return parsedNumbers.Sum();
         }
 
@@ -78,12 +80,32 @@ namespace StringCalculatorKataConsole
                 return _defaultDelimeters.Concat(userDefinedDels).ToArray();
         }
 
-        //public int Add(string numbers)
-        //{
-        //    if (numbers == "")
-        //        return 0;
+        private void ValidateNonNegatives(int[] numbers)
+        {
+            int[] negatives = GetNegatives(numbers);
 
-        //    return numbers.Split(_defaultDelimeters, StringSplitOptions.RemoveEmptyEntries).Sum(n => int.Parse(n));
-        //}
+            if (negatives != null)
+            {
+                ThrowNegativesException(negatives);
+            }
+        }
+
+        private void ThrowNegativesException(int[] negatives)
+        {
+            string errorMessage = "negatives not allowed: ";
+            foreach (int neg in negatives)
+            {
+                errorMessage += $"{neg} ";
+            }
+            throw new ArgumentException(errorMessage.TrimEnd());
+        }
+
+        private int[] GetNegatives(int[] numbers)
+        {
+            if (numbers.Any(n => n < 0))
+                return numbers.Where(n => n < 0).ToArray();
+
+            return null;
+        }
     }
 }
