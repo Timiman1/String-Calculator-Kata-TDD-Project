@@ -11,6 +11,8 @@ namespace StringCalculatorKataConsole
 
         private const string SingleCustomDelimeterPattern = @"^//\[?([^][\w-]+)\]?\\n";
 
+        private const string MultipleCustomDelimetersPattern = @"\[([^][\w-]+)\]";
+
         private const string DelimeterDefinitionPattern = @"^//.*?\\n(.+)";
 
         public int Add(string numbers)
@@ -45,10 +47,18 @@ namespace StringCalculatorKataConsole
 
         private string[] GetCustomDelimeters(string numbers)
         {
-            Match match = Regex.Match(numbers, SingleCustomDelimeterPattern);
+            string[] result;
+            MatchCollection matches = Regex.Matches(numbers, MultipleCustomDelimetersPattern);
 
-            string[] result = new[] { match.Groups[1].Value };
-
+            if (matches.Count == 0)
+            {
+                Match match = Regex.Match(numbers, SingleCustomDelimeterPattern);
+                result = new[] { match.Groups[1].Value };
+            }
+            else
+            {
+                result = matches.Select(m => m.Groups[1].Value).ToArray();
+            }
             return result;
         }
 

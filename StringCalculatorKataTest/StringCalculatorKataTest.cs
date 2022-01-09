@@ -107,5 +107,18 @@ namespace TestProject
 
             Assert.Equal(6, result);
         }
+
+        [Theory]
+        [InlineData("//[%][$]\n10%20$30\n40,50")]
+        [InlineData("//[%][$][£]\n10%20$30£40,50")]
+        [InlineData("//[?][£][$][!]\n10!20$30£40?50")]
+        public void Should_Return_150_When_Adding_10_And_20_And_30_And_40_And_50_Separated_By_Multiple_Custom_Delimeters_And_Commas_And_Newlines(string numbers)
+        {
+            StringCalculatorKata kata = new StringCalculatorKata();
+
+            int result = kata.Add(numbers);
+
+            Assert.Equal(150, result);
+        }
     }
 }
