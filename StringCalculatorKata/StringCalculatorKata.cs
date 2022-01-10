@@ -22,10 +22,7 @@ namespace StringCalculatorKataConsole
 
         private int HiddenAddImpl(string numbers)
         {
-            if (numbers.StartsWith("//"))
-            {
-                numbers = numbers.Replace("\n", @"\n");
-            }
+            EscapeNewLines(ref numbers);
 
             int[] parsedNumbers = GetSeparatedParsedNumbers(numbers);
 
@@ -34,73 +31,71 @@ namespace StringCalculatorKataConsole
             return parsedNumbers.Sum();
         }
 
+        private void EscapeNewLines(ref string numbers)
+        {
+            numbers = numbers.Replace("\n", @"\n");
+        }
+
         private int[] GetSeparatedParsedNumbers(string numbers)
         {
-            string toParse;
-            string[] custDels = null;
-            if (HasCustomDelimeters(numbers, out toParse))
-            {
-                custDels = GetCustomDelimeters(numbers);
-            }
-            return SeparateNumbers(toParse, GetAllDelimeters(custDels));
+            string[] dels = GetAllDelimeters(GetCustomDelimeters(numbers));
+            string toSplit = GetNonSeparatedNumbers(numbers);
+            string[] separatedNumbers = toSplit.Split(dels, StringSplitOptions.RemoveEmptyEntries);
+
+            return IgnoreNumbersLargerThan1000(separatedNumbers).Select(n => int.Parse(n)).ToArray();
         }
 
         private string[] GetCustomDelimeters(string numbers)
         {
-            string[] result;
+            if (HasCustomDelimeters(numbers) == false)
+            {
+                return null;
+            }
+
             MatchCollection matches = Regex.Matches(numbers, MultipleCustomDelimetersPattern);
 
             if (matches.Count == 0)
             {
                 Match match = Regex.Match(numbers, SingleCustomDelimeterPattern);
-                result = new[] { match.Groups[1].Value };
+                return new[] { match.Groups[1].Value };
             }
             else
             {
-                result = matches.Select(m => m.Groups[1].Value).ToArray();
+                return matches.Select(m => m.Groups[1].Value).ToArray();
             }
-            return result;
         }
 
-        private bool HasCustomDelimeters(string numbers, out string toParse)
+        private bool HasCustomDelimeters(string numbers)
         {
-            Match delMatch = new Regex(DelimeterDefinitionPattern).Match(numbers);
-
-            if (delMatch.Success)
-            {
-                toParse = Regex.Unescape(delMatch.Groups[1].Value);
-                return true;
-            }
-            toParse = numbers;
-            return false;
+            return (Regex.Match(numbers, DelimeterDefinitionPattern).Success == true);
         }
 
-        private int[] SeparateNumbers(string numbers, string[] dels)
+        private string GetNonSeparatedNumbers(string numbers)
         {
-            string[] separated = numbers.Split(dels, StringSplitOptions.RemoveEmptyEntries);
+            Match match = Regex.Match(numbers, DelimeterDefinitionPattern);
 
-            return IgnoreNumbersLargerThan1000(separated).Select(n => int.Parse(n)).ToArray();
+            return Regex.Unescape(match.Success == true ? match.Groups[1].Value : numbers);
         }
 
         private string[] GetAllDelimeters(string[] userDefinedDels)
         {
-            if (userDefinedDels == null)
-                return _defaultDelimeters;
-            else
-                return _defaultDelimeters.Concat(userDefinedDels).ToArray();
+            return userDefinedDels == null ?
+                _defaultDelimeters
+                :
+                _defaultDelimeters.Concat(userDefinedDels).ToArray();
         }
 
         private void ValidateNonNegatives(int[] numbers)
         {
-            int[] negatives = GetNegatives(numbers);
+            IEnumerable<int> negatives = GetNegatives(numbers);
 
-            if (negatives != null)
+            if (negatives.Any() == true)
             {
                 ThrowNegativesException(negatives);
             }
         }
 
-        private void ThrowNegativesException(int[] negatives)
+        private void ThrowNegativesException(IEnumerable<int> negatives)
         {
             string errorMessage = "negatives not allowed: ";
             foreach (int neg in negatives)
@@ -110,12 +105,9 @@ namespace StringCalculatorKataConsole
             throw new ArgumentException(errorMessage.TrimEnd());
         }
 
-        private int[] GetNegatives(int[] numbers)
+        private IEnumerable<int> GetNegatives(int[] numbers)
         {
-            if (numbers.Any(n => n < 0))
-                return numbers.Where(n => n < 0).ToArray();
-
-            return null;
+            return numbers.Where(n => n < 0);
         }
 
         private IEnumerable<string> IgnoreNumbersLargerThan1000(string[] numbers)
